@@ -1,2 +1,4 @@
 # WRO-LittleRobot-
-Hey, there. I am Riardon from the "LittleRobot" team. It is our repository Here you can learn more about the basics of our code. 
+Всем привет. Я Фёдор из команды "LittleRobot". Это наш репозиторий, где вы можете узнать о наших достижениях в соревнованиях WRO "Future Engenniers". Здесь вы можете узнать основные аспекты нашей программы, изучить 3D модели основных частей, из которыч состоит наш робот, и т.д.
+# 1. Конструкция робота.
+Задачей нашего робота является проезд определенной трассы на скорость.
