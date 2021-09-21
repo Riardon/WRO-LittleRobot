@@ -23,15 +23,28 @@ to turn off, and thats it, all done.
 
 # Connection to raspberry
 
-First you neeed to install some os on your raspberry. You’ll need a microSD card (go with at least 8 GB), a computer with a slot for it, and, of course, a Raspberry Pi and basic peripherals (a mouse, keyboard, screen, and power source).
+1)First you neeed to install some os on your raspberry. You’ll need a microSD card (go with at least 8 GB), a computer with a slot for it, and, of course, a Raspberry Pi and basic peripherals (a mouse, keyboard, screen, and power source).
 
 First things first: hop onto your computer (Mac and PC are both fine) and download the Raspbian disc image. You can find the latest version of Raspbian on the Raspberry Pi Foundation’s website(https://www.raspberrypi.org/software/operating-systems/). Give yourself some time for this. It can easily take a half hour or more to download.
 
 The Raspbian disc image is compressed, so you’ll need to unzip it. The file uses the ZIP64 format, so depending on how current your built-in utilities are, you need to use certain programs to unzip it. If you have any trouble, try these programs recommended by the Raspberry Pi Foundation:
-
 Windows users, you’ll want 7-Zip.
 Mac users, The Unarchiver is your best bet.
 Linux users will use the appropriately named Unzip.
 
+Next, pop your microSD card into your computer and write the disc image to it. You’ll need a specific program to do this:
+Windows users, your answer is Win32 Disk Imager.
+Mac users, you can use the disk utility that’s already on your machine.
+Linux people, Etcher – which also works on Mac and Windows – is what the Raspberry Pi Foundation recommends.
+The process of actually writing the image will be slightly different across these programs, but it’s pretty self-explanatory no matter what you’re using. Each of these programs will have you select the destination (make sure you’ve picked your microSD card!) and the disc image (the unzipped Raspbian file). Choose, double-check, and then hit the button to write.
+
+![alt text](https://github.com/Riardon/WRO-LittleRobot/blob/98ea62df5dd35c2d285455a4992937db45a9d991/readme_photos/win32-disk-imager-raspbian.png)
+
+Once the disc image has been written to the microSD card, you’re ready to go! Put that sucker into your Rasberry Pi, plug in the peripherals and power source, and enjoy. The current edition to Raspbian will boot directly to the desktop.(guide: https://thepi.io/how-to-install-raspbian-on-the-raspberry-pi/)
+
+2) Now we are all done with the raspberry os, now we'll need an hdmi cable, a monitor, a power supply for raspberry, pc with ethernet port, and an ethernet cable.
+connect your raspberri to pc using ethernet cable, with hdmi to the monitor, and finally power ip rasppberry.
+
+3) Here you need to sing in(default login: pi, password: rasraspberry)
 
 
