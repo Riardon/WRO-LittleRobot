@@ -57,8 +57,29 @@ go to the bottom and add "enable_uart=1"
 
 photo
 
-5) Also you need to get raspberry's ip ethernet adress, so use command "ifconfig". There you'll see your your ip adrress.
+5) Also you need to get raspberry's ip ethernet adress, so use command "ifconfig". There you'll see your your ip adrress. Write it down somewhere, we'll need it later.
 
 photo
 
-6
+6) And finally we need to enable ssh on our raspberry. Use command "sudo raspi-config".
+
+photo
+
+You'll see a menu, go to 5'th point "Interfacing Options", press enter
+
+![alt text](https://github.com/Riardon/WRO-LittleRobot/blob/abfd8e45297dbf68f70f8a7d682ced6558985106/readme_photos/raspi-config-interfacing-options.png)
+
+Choose point 2 "SSH"
+
+![alt text](https://github.com/Riardon/WRO-LittleRobot/blob/abfd8e45297dbf68f70f8a7d682ced6558985106/readme_photos/raspi-config-ssh.png)
+
+Select "Yes", and hit enter 2 times, then Esc
+
+photo
+
+phtot
+
+And we are done for now with hdmi cable, so disconnect it.
+
+7) Now we can use raspberry only using ethernet, by ssh, but first you need to download bitvise ssh(https://www.bitvise.com/ssh-client-download).
+8) After you are done with bitvise, open it. You'll see a menu, where you need to put ip address, written down by you earlier in field "host", 22 in field 
