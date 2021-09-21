@@ -47,4 +47,18 @@ connect your raspberri to pc using ethernet cable, with hdmi to the monitor, and
 
 3) Here you need to sing in(default login: pi, password: rasraspberry)
 
+photo
 
+4)Then use command "sudo nano /boot/config.txt", with it you will be able to edit file "config.txt".
+
+photo
+
+go to the bottom and add "enable_uart=1"
+
+photo
+
+5) Also you need to get raspberry's ip ethernet adress, so use command "ifconfig". There you'll see your your ip adrress.
+
+photo
+
+6
