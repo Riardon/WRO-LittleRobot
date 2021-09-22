@@ -1,20 +1,19 @@
 # File description
 
-On our robot we have 2 files that work at the same time. File main.py is launched on pyboard, it get's the data from raspberry and controls servo drive and motor. osnov.py(for final attempts) or kwala.py(for qualification) is launched on raspberry, it receives the image from camera, processes it, and sends data to pyboard.
+On our robot we have 2 files that work at the same time. File main.py is launched on pyboard, it get's the data from raspberry and controls servo drive and motor. fianl.py(for final attempts) or qualification.py(for qualification) is launched on raspberry, it receives the image from camera, processes it, and sends data to pyboard.
 RobotAPI.py - library, that is used on raspberry to help get an image from camera and display it while debugging.
-autostart.py - file on raspberry, for auto launching of the program after turning on.
 module.py - library on pyboard. It's used to help controling servo and motor.
 
 # Main.py
 
 main.py is a program on pyboard. First of all, it waits  for a button to be pressed, than it gets the speed, and an angle for servo drive. Than it passes the speed directly to motor. And uses a proportional-derivative controller(https://en.wikipedia.org/wiki/PID_controller) to regulate the speed of the servo and set to the needed angle. 
 
-# kwala.py
+# qualification.py
 
-kwala.py is a program on raspberry. After it gets the image from camera, it cuts out 3 areas on it, 1 on the right side, 1 on the left, and at the bottom. The program converts them from the bgr color model to hsv, and findes the needed items on it. The ones on the left and right are used to detect the walls. After detection it uses the proportional-derivative controller to help robot move in the center between 2 walls. Then if we see 1 wall, and don't see the other, the robot starts to to turn. The part at the bottom is used to count lines, that we have passed. When the robot passes 12 lines, it stops.
+qualification.py is a program on raspberry. After it gets the image from camera, it cuts out 3 areas on it, 1 on the right side, 1 on the left, and at the bottom. The program converts them from the bgr color model to hsv, and findes the needed items on it. The ones on the left and right are used to detect the walls. After detection it uses the proportional-derivative controller to help robot move in the center between 2 walls. Then if we see 1 wall, and don't see the other, the robot starts to to turn. The part at the bottom is used to count lines, that we have passed. When the robot passes 12 lines, it stops.
 
-# osnov.py
-osnov.py is a  program on raspberry. It's practically similar to kwala.py. It's 2 more area in it, 1 is used to detect signes, and, based on theres position, make robot go arond them. A proportional-derivative controller is also used here. The other is used to find out, in which
+# final.py
+final.py is a  program on raspberry. It's practically similar to qualification.py. It's 2 more area in it, 1 is used to detect signes, and, based on theres position, make robot go arond them. A proportional-derivative controller is also used here. The other is used to find out, in which
 
 # Connection to pyboard
 
@@ -61,7 +60,21 @@ photo
 
 photo
 
-6) And finally we need to enable ssh on our raspberry. Use command "sudo raspi-config".
+6) Now use command crontab -e
+
+photo
+
+Aт editor lie nano will appear, paste this strings inside it
+
+for final:
+
+@reboot sudo python /home/pi/robot/final.py
+
+for qualification:
+
+@reboot sudo python /home/pi/robot/qualification.py
+
+7) And finally we need to enable ssh on our raspberry. Use command "sudo raspi-config".
 
 photo
 
@@ -81,8 +94,8 @@ phtot
 
 And we are done for now with hdmi cable, so disconnect it.
 
-7) Now we can use raspberry only using ethernet, by ssh, but first you need to download bitvise ssh(https://www.bitvise.com/ssh-client-download).
-8) After you are done with bitvise, open it. You'll see a menu, where you need to put ip address, written down by you earlier in field "host", 22 in field, login goest to username field(pi by default), and password to password. Hit log in, wait for a second, accept Host key
+8) Now we can use raspberry only using ethernet, by ssh, but first you need to download bitvise ssh(https://www.bitvise.com/ssh-client-download).
+9) After you are done with bitvise, open it. You'll see a menu, where you need to put ip address, written down by you earlier in field "host", 22 in field, login goest to username field(pi by default), and password to password. Hit log in, wait for a second, accept Host key
 
 photo
 
@@ -94,6 +107,10 @@ It wll open a window, like a simple explorer. Now click with right mouse button 
 
 photo
 
+create new folder, named "robot"
 
+photo
 
+Now go into it, and drag your files: RobotAPI.py and qualification.py or final.py
 
+And that's all. Disconnect ethernet. Place robot at the start. Reboot it. Wait for blue led shine on raspberry and press the button to start.
