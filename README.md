@@ -76,7 +76,7 @@ for qualification:
 
 ![alt text](https://github.com/Riardon/WRO-LittleRobot/blob/cb378b4d5c5283145f090b83d9829e6220d2b0e9/readme_photos/crontab_1.png)
 
-[!alt text](https://github.com/Riardon/WRO-LittleRobot/blob/cb378b4d5c5283145f090b83d9829e6220d2b0e9/readme_photos/crontab_2.png)
+![alt text](https://github.com/Riardon/WRO-LittleRobot/blob/12ff5a6c5ec3b69a9ee917aa6782fbf747240f68/readme_photos/crontab_2.png)
 
 7) And finally we need to enable ssh on our raspberry. Use command "sudo raspi-config".
 
