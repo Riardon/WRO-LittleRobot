@@ -25,6 +25,9 @@ final.py is a program on raspberry. It's practically similar to qualification.py
 
 To put the programs to pyboard, you need to just connect pyboard to your computer, and it will open as a USB flash drive, then copy files main.py and module.py, wait for red LED to turn off, and thats it, all done.
 
+![alt text](https://github.com/Riardon/WRO-LittleRobot/blob/b83ab2642b691f070a6a2ed29670b6094b4c30cf/readme_photos/pyboard_1.png)
+![alt text](https://github.com/Riardon/WRO-LittleRobot/blob/b83ab2642b691f070a6a2ed29670b6094b4c30cf/readme_photos/pyboard_2.png)
+
 # Connection to raspberry
 
 1)First you neeed to install some os on your raspberry. You’ll need a microSD card (go with at least 8 GB), a computer with a slot for it, and, of course, a Raspberry Pi and basic peripherals (a mouse, keyboard, screen, and power source).
