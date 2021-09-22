@@ -57,11 +57,12 @@ go to the bottom and add "enable_uart=1"
 5) Also you need to get raspberry's ip ethernet adress, so use command "ifconfig". There you'll see your your ip adrress. Write it down somewhere, we'll need it later.
 
 ![alt text](https://github.com/Riardon/WRO-LittleRobot/blob/72c6972e81f78c73bc5a16d1ddeb7530171776b4/readme_photos/ifconfig_1.png)
+
 ![alt text](https://github.com/Riardon/WRO-LittleRobot/blob/72c6972e81f78c73bc5a16d1ddeb7530171776b4/readme_photos/ifconfig_2.png)
 
 6) Now use command crontab -e
 
-photo
+![alt text](https://github.com/Riardon/WRO-LittleRobot/blob/cf567818c8cc6dc724ac27561e6937ea52fa7c6a/readme_photos/crontab.png)
 
 Aт editor lie nano will appear, paste this strings inside it
 
@@ -72,6 +73,10 @@ for final:
 for qualification:
 
 @reboot sudo python /home/pi/robot/qualification.py
+
+![alt text](https://github.com/Riardon/WRO-LittleRobot/blob/cb378b4d5c5283145f090b83d9829e6220d2b0e9/readme_photos/crontab_1.png)
+
+[!alt text](https://github.com/Riardon/WRO-LittleRobot/blob/cb378b4d5c5283145f090b83d9829e6220d2b0e9/readme_photos/crontab_2.png)
 
 7) And finally we need to enable ssh on our raspberry. Use command "sudo raspi-config".
 
