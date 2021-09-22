@@ -46,19 +46,18 @@ connect your raspberri to pc using ethernet cable, with hdmi to the monitor, and
 
 3) Here you need to sing in(default login: pi, password: rasraspberry)
 
-photo
+4)Then use command "sudo nano /boot/config.txt", with it you will be able to edit file "config.txt"
 
-4)Then use command "sudo nano /boot/config.txt", with it you will be able to edit file "config.txt".
-
-photo
+![alt text](https://github.com/Riardon/WRO-LittleRobot/blob/1e1554d7852441496e2f9f1a4b7d2ac0988bd82f/readme_photos/boot_txt_1.png)
 
 go to the bottom and add "enable_uart=1"
 
-photo
+![alt text](https://github.com/Riardon/WRO-LittleRobot/blob/1e1554d7852441496e2f9f1a4b7d2ac0988bd82f/readme_photos/boot_2.png)
 
 5) Also you need to get raspberry's ip ethernet adress, so use command "ifconfig". There you'll see your your ip adrress. Write it down somewhere, we'll need it later.
 
-photo
+![alt text](https://github.com/Riardon/WRO-LittleRobot/blob/72c6972e81f78c73bc5a16d1ddeb7530171776b4/readme_photos/ifconfig_1.png)
+![alt text](https://github.com/Riardon/WRO-LittleRobot/blob/72c6972e81f78c73bc5a16d1ddeb7530171776b4/readme_photos/ifconfig_2.png)
 
 6) Now use command crontab -e
 
@@ -76,7 +75,7 @@ for qualification:
 
 7) And finally we need to enable ssh on our raspberry. Use command "sudo raspi-config".
 
-photo
+![alt text](https://github.com/Riardon/WRO-LittleRobot/blob/1e1554d7852441496e2f9f1a4b7d2ac0988bd82f/readme_photos/ssh_1.png)
 
 You'll see a menu, go to 5'th point "Interfacing Options", press enter
 
@@ -88,29 +87,29 @@ Choose point 2 "SSH"
 
 Select "Yes", and hit enter 2 times, then Esc
 
-photo
-
-phtot
+![alt text](https://github.com/Riardon/WRO-LittleRobot/blob/1e1554d7852441496e2f9f1a4b7d2ac0988bd82f/readme_photos/ssh_2.png)
 
 And we are done for now with hdmi cable, so disconnect it.
 
 8) Now we can use raspberry only using ethernet, by ssh, but first you need to download bitvise ssh(https://www.bitvise.com/ssh-client-download).
 9) After you are done with bitvise, open it. You'll see a menu, where you need to put ip address, written down by you earlier in field "host", 22 in field, login goest to username field(pi by default), and password to password. Hit log in, wait for a second, accept Host key
 
-photo
+![alt text](https://github.com/Riardon/WRO-LittleRobot/blob/1e1554d7852441496e2f9f1a4b7d2ac0988bd82f/readme_photos/bitvise_1.png)
+
+![alt text](https://github.com/Riardon/WRO-LittleRobot/blob/1e1554d7852441496e2f9f1a4b7d2ac0988bd82f/readme_photos/bitvise_2.png)
 
 The window will chage a bit. now open new sftp window.
 
-photo
+![alt text](https://github.com/Riardon/WRO-LittleRobot/blob/1e1554d7852441496e2f9f1a4b7d2ac0988bd82f/readme_photos/bitvise_3.png)
 
 It wll open a window, like a simple explorer. Now click with right mouse button at the area of remote files.
 
-photo
+![alt text](https://github.com/Riardon/WRO-LittleRobot/blob/1e1554d7852441496e2f9f1a4b7d2ac0988bd82f/readme_photos/files_1.png)
 
-create new folder, named "robot"
+![alt text](https://github.com/Riardon/WRO-LittleRobot/blob/1e1554d7852441496e2f9f1a4b7d2ac0988bd82f/readme_photos/files_2.png)
 
-photo
+create new folder, named "robot".
 
 Now go into it, and drag your files: RobotAPI.py and qualification.py or final.py
 
-And that's all. Disconnect ethernet. Place robot at the start. Reboot it. Wait for blue led shine on raspberry and press the button to start.
+And that's all. Disconnect ethernet. Place robot at the start. Reboot it. Wait for blue led shine on pyboard and press the button to start.
