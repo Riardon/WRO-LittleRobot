@@ -4,7 +4,7 @@ On our robot we have 2 files that work at the same time.
 
 File main.py is launched on pyboard, it get's the data from raspberry and controls servo drive and motor. 
 
-fianl.py(for final attempts) or qualification.py(for qualification) is launched on raspberry, it receives the image from camera, processes it, and sends data to pyboard.
+final.py(for final attempts) or qualification.py(for qualification) is launched on raspberry, it receives the image from camera, processes it, and sends data to pyboard.
 
 RobotAPI.py - library, that is used on raspberry to help get an image from camera and display it while debugging.
 
@@ -12,14 +12,14 @@ module.py - library on pyboard. It's used to help controling servo and motor.
 
 # Main.py
 
-main.py is a program on pyboard. First of all, it waits  for a button to be pressed, than it gets the speed, and an angle for servo drive. Than it passes the speed directly to motor. And uses a proportional-derivative controller(https://en.wikipedia.org/wiki/PID_controller) to regulate the speed of the servo and set to the needed angle. 
+main.py is a program on pyboard. First, it waits for a button to be pressed, than it gets the speed, and an angle for servo drive. Than it passes the speed directly to motor. And uses a proportional-derivative controller(https://en.wikipedia.org/wiki/PID_controller) to regulate the speed of the servo and set to the needed angle. 
 
 # qualification.py
 
-qualification.py is a program on raspberry. After it gets the image from camera, it cuts out 3 areas on it, 1 on the right side, 1 on the left, and at the bottom. The program converts them from the bgr color model to hsv, and findes the needed items on it. The ones on the left and right are used to detect the walls. After detection it uses the proportional-derivative controller to help robot move in the center between 2 walls. Then if we see 1 wall, and don't see the other, the robot starts to to turn. The part at the bottom is used to count lines, that we have passed. When the robot passes 12 lines, it stops.
+qualification.py is a program on raspberry. After it gets the image from camera, it cuts out 3 areas on it, 1 on the right side, 1 on the left, and at the bottom. The program converts them from the bgr color model to hsv, and findes the needed items on it. The ones on the left and right are used to detect the walls. After detection, it uses the proportional-derivative controller to help robot move in the center between 2 walls. Then if we see 1 wall, and don't see the other, the robot starts to turn. The part at the bottom is used to count lines, that we have passed. When the robot passes 12 lines, it stops.
 
 # final.py
-final.py is a  program on raspberry. It's practically similar to qualification.py. It's 2 more area in it, 1 is used to detect signes, and, based on theres position, make robot go arond them. A proportional-derivative controller is also used here. The other is used to find out, in which
+final.py is a program on raspberry. It's practically similar to qualification.py. It's 2 more area in it, 1 is used to detect signes, and, based on theres position, make robot go arond them. A proportional-derivative controller is also used here. The other is used to find out, in which
 
 # Connection to pyboard
 
@@ -46,12 +46,12 @@ The process of actually writing the image will be slightly different across thes
 
 Once the disc image has been written to the microSD card, you’re ready to go! Put that sucker into your Rasberry Pi, plug in the peripherals and power source, and enjoy. The current edition to Raspbian will boot directly to the desktop.(guide: https://thepi.io/how-to-install-raspbian-on-the-raspberry-pi/)
 
-2) Now we are all done with the raspberry os, now we'll need an hdmi cable, a monitor, a power supply for raspberry, pc with ethernet port, and an ethernet cable.
-connect your raspberri to pc using ethernet cable, with hdmi to the monitor, and finally power ip rasppberry.
+2) Now we are all done with the raspberry os, now we'll need a hdmi cable, a monitor, a power supply for raspberry, pc with ethernet port, and an ethernet cable.
+Connect your raspberri to pc using ethernet cable, with hdmi to the monitor, and finally power ip rasppberry.
 
 3) Here you need to sing in(default login: pi, password: rasraspberry)
 
-4)Then use command "sudo nano /boot/config.txt", with it you will be able to edit file "config.txt"
+4)Then use command "sudo nano /boot/config.txt", with it, you will be able to edit file "config.txt"
 
 ![alt text](https://github.com/Riardon/WRO-LittleRobot/blob/1e1554d7852441496e2f9f1a4b7d2ac0988bd82f/readme_photos/boot_txt_1.png)
 
@@ -59,7 +59,7 @@ go to the bottom and add "enable_uart=1"
 
 ![alt text](https://github.com/Riardon/WRO-LittleRobot/blob/1e1554d7852441496e2f9f1a4b7d2ac0988bd82f/readme_photos/boot_2.png)
 
-5) Also you need to get raspberry's ip ethernet adress, so use command "ifconfig". There you'll see your your ip adrress. Write it down somewhere, we'll need it later.
+5) Also you need to get raspberry's ip ethernet adress, so use command "ifconfig". There you'll see your ip adrress. Write it down somewhere, we'll need it later.
 
 ![alt text](https://github.com/Riardon/WRO-LittleRobot/blob/72c6972e81f78c73bc5a16d1ddeb7530171776b4/readme_photos/ifconfig_1.png)
 
@@ -108,7 +108,7 @@ And we are done for now with hdmi cable, so disconnect it.
 
 ![alt text](https://github.com/Riardon/WRO-LittleRobot/blob/1e1554d7852441496e2f9f1a4b7d2ac0988bd82f/readme_photos/bitvise_2.png)
 
-The window will chage a bit. now open new sftp window.
+The window will chage a bit. Now open new sftp window.
 
 ![alt text](https://github.com/Riardon/WRO-LittleRobot/blob/1e1554d7852441496e2f9f1a4b7d2ac0988bd82f/readme_photos/bitvise_3.png)
 
@@ -116,7 +116,7 @@ It wll open a window, like a simple explorer. Now click with right mouse button 
 
 ![alt text](https://github.com/Riardon/WRO-LittleRobot/blob/1e1554d7852441496e2f9f1a4b7d2ac0988bd82f/readme_photos/files_1.png)
 
-create new folder, named "robot".
+Create new folder, named "robot".
 
 ![alt text](https://github.com/Riardon/WRO-LittleRobot/blob/1e1554d7852441496e2f9f1a4b7d2ac0988bd82f/readme_photos/files_2.png)
 
