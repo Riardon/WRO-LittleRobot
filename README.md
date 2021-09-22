@@ -1,7 +1,13 @@
 # File description
 
-On our robot we have 2 files that work at the same time. File main.py is launched on pyboard, it get's the data from raspberry and controls servo drive and motor. fianl.py(for final attempts) or qualification.py(for qualification) is launched on raspberry, it receives the image from camera, processes it, and sends data to pyboard.
+On our robot we have 2 files that work at the same time. 
+
+File main.py is launched on pyboard, it get's the data from raspberry and controls servo drive and motor. 
+
+fianl.py(for final attempts) or qualification.py(for qualification) is launched on raspberry, it receives the image from camera, processes it, and sends data to pyboard.
+
 RobotAPI.py - library, that is used on raspberry to help get an image from camera and display it while debugging.
+
 module.py - library on pyboard. It's used to help controling servo and motor.
 
 # Main.py
@@ -17,8 +23,7 @@ final.py is a  program on raspberry. It's practically similar to qualification.p
 
 # Connection to pyboard
 
-To put the programs to pyboard, you need to just connect pyboard to your computer, and it will open as a USB flash drive, then copy files main.py and module.py, wait for red LED
-to turn off, and thats it, all done.
+To put the programs to pyboard, you need to just connect pyboard to your computer, and it will open as a USB flash drive, then copy files main.py and module.py, wait for red LED to turn off, and thats it, all done.
 
 # Connection to raspberry
 
@@ -111,9 +116,9 @@ It wll open a window, like a simple explorer. Now click with right mouse button 
 
 ![alt text](https://github.com/Riardon/WRO-LittleRobot/blob/1e1554d7852441496e2f9f1a4b7d2ac0988bd82f/readme_photos/files_1.png)
 
-![alt text](https://github.com/Riardon/WRO-LittleRobot/blob/1e1554d7852441496e2f9f1a4b7d2ac0988bd82f/readme_photos/files_2.png)
-
 create new folder, named "robot".
+
+![alt text](https://github.com/Riardon/WRO-LittleRobot/blob/1e1554d7852441496e2f9f1a4b7d2ac0988bd82f/readme_photos/files_2.png)
 
 Now go into it, and drag your files: RobotAPI.py and qualification.py or final.py
 
