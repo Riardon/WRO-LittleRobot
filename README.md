@@ -82,4 +82,18 @@ phtot
 And we are done for now with hdmi cable, so disconnect it.
 
 7) Now we can use raspberry only using ethernet, by ssh, but first you need to download bitvise ssh(https://www.bitvise.com/ssh-client-download).
-8) After you are done with bitvise, open it. You'll see a menu, where you need to put ip address, written down by you earlier in field "host", 22 in field 
+8) After you are done with bitvise, open it. You'll see a menu, where you need to put ip address, written down by you earlier in field "host", 22 in field, login goest to username field(pi by default), and password to password. Hit log in, wait for a second, accept Host key
+
+photo
+
+The window will chage a bit. now open new sftp window.
+
+photo
+
+It wll open a window, like a simple explorer. Now click with right mouse button at the area of remote files.
+
+photo
+
+
+
+
