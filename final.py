@@ -4,57 +4,50 @@ import numpy as np
 import serial
 import time
 
-# создание констант для границ hsv
-BLACK_UP = np.array([90, 255, 75])  # для стенок
-BLACK_LOW = np.array([0, 40, 0])
-ORANGE_UP = np.array([50, 185, 235])  # для ораньжевых линий
-ORANGE_LOW = np.array([10, 40, 110])
-BLUE_UP = np.array([140, 215, 225])  # для синих линий
-BLUE_LOW = np.array([90, 70, 70])
-BLUE_UP_CHECK_DIR = np.array([130, 215, 115])  # для синих линий, для определения направления
-BLUE_LOW_CHECK_DIR = np.array([70, 70, 70])
-ORANGE_UP_CHECK_DIR = np.array([50, 185, 175])  # для ораньжевых линий, для определения направления
-ORANGE_LOW_CHECK_DIR = np.array([15, 80, 70])
-GREEN_UP = np.array([90, 255, 130])  # для зелёных знаков
-GREEN_LOW = np.array([40, 170, 60])
-RED_UP = np.array([15, 205, 215])  # для красных знаков
-RED_LOW = np.array([0, 80, 80])
+# initializing constants for hsv
+BLACK_UP = np.array([100, 255, 78])  # for walls
+BLACK_LOW = np.array([30, 37, 0])
+ORANGE_UP = np.array([30, 145, 195])  # for orange lines
+ORANGE_LOW = np.array([10, 30, 150])
+BLUE_UP = np.array([120, 205, 185])  # for blue lines
+BLUE_LOW = np.array([88, 70, 50])
+GREEN_UP = np.array([90, 255, 155])  # for green signs
+GREEN_LOW = np.array([60, 125, 80])
+RED_UP_1 = np.array([10, 255, 255])   # for red signs
+RED_LOW_1 = np.array([0, 0, 0])
+RED_UP_2 = np.array([180, 255, 255])
+RED_LOW_2 = np.array([170, 0, 0])
 
-DRAW = True  # коснтанта обозначающая, нужно ли рисовать контуры на изображении
+DRAW = True  # initializing constants for drawing the borders on the image
 
-# создание констант координат выделяемых зон на изображении
-X1_1_PD = 615  # для стенок
+# initializing constants for coordinates of areas in the image
+X1_1_PD = 615  # for walls
 X2_1_PD = 640
 X1_2_PD = 0
 X2_2_PD = 25
-Y1_PD = 280
+Y1_PD = 290
 Y2_PD = 480
 
-X1_LINE = 300  # для подсчёта линий
+X1_LINE = 300  # for counting lines
 X2_LINE = 380
 Y1_LINE = 420
 Y2_LINE = 480
 
-X1_CUB = 30  # для детекции знаков
+X1_CUB = 30  # for sings detection
 X2_CUB = 610
 Y1_CUB = 210
 Y2_CUB = 440
 
-X1_CHECK_DIR = 260  # для опрделения направления
-X2_CHECK_DIR = 380
-Y1_CHECK_DIR = 320
-Y2_CHECK_DIR = 340
-
-# создание констант коэффициентов для регуляторов
-KP = 0.013  # пропорциональная составляющая для езды по стенкам
-KD = 0.05  # дифференцирующая составляющая для езды по стенкам
-K_X = 0.05  # пропорциональная составляющая для объезда знаков
-K_Y = 0.04  # дифференцирующая составляющая для объезда знаков
+# initializing constants of ratio for controllers
+KP = 0.013  # the proportional gain, a tuning parameter for walls
+KD = 0.05  # the derivative gain, a tuning parameter for walls
+K_X = 0.05  # the proportional gain, a tuning parameter for signs
+K_Y = 0.04  # the derivative gain, a tuning parameter for signs
 
 
-class Frames:  # класс для зон выделяемых на картинке
-    def __init__(self, img, x_1, x_2, y_1, y_2, low, up):  # в ините указывается координаты и список границ для hsv
-        self.x_1 = x_1  # создание переменных в классе
+class Frames:  # clsss for areas on the picture
+    def __init__(self, img, x_1, x_2, y_1, y_2, low, up):  # init gains coordinates of the area, and hsv boders
+        self.x_1 = x_1  # initializing variables in class
         self.x_2 = x_2
         self.y_1 = y_1
         self.y_2 = y_2
@@ -69,66 +62,69 @@ class Frames:  # класс для зон выделяемых на картин
 
         self.update(img)
 
-    def update(self, img):  # функция обновления изображения
-        # выделение вырезанной зоны на основном изображении
+    def update(self, img):  # function for updating the image
+        # getting the needed area on the image and outlining it
         cv2.rectangle(img, (self.x_1, self.y_1), (self.x_2, self.y_2), (150, 0, 50), 2)
 
-        self.frame = img[self.y_1:self.y_2, self.x_1:self.x_2]  # вырезание зоны на изображении
-        self.frame_gaussed = cv2.GaussianBlur(self.frame, (1, 1), cv2.BORDER_DEFAULT)  # размытие изображения
+        self.frame = img[self.y_1:self.y_2, self.x_1:self.x_2]
+        self.frame_gaussed = cv2.GaussianBlur(self.frame, (1, 1), cv2.BORDER_DEFAULT)  # blurring the image
 
-        self.hsv = cv2.cvtColor(self.frame_gaussed, cv2.COLOR_BGR2HSV)  # перевод в цветовую модель hsv
+        self.hsv = cv2.cvtColor(self.frame_gaussed, cv2.COLOR_BGR2HSV)  # turning the image from bgr to hsv
 
-    def find_contours(self, n=0, to_draw=True, color=(0, 0, 255), min_area=50):  # функция выделения контуров,
-        # передаются необходимые границы в hsv, нужно ли отрисовывать границы на изображении, цвет отрисовки, и
-        # минимальная необходимая площадь контура
-        self.mask = cv2.inRange(self.hsv, self.low[n], self.up[n])  # накладываем маску на изображение
+    def find_contours(self, n=0, to_draw=True, color=(0, 0, 255), min_area=50, red_dop=0):  # function for selecting
+        # the contours, it gets, the needed borders of hsv, if the borders should be drawn, color of the outlining,
+        # minimum area of the contour, and if it is used for red signs
+        self.mask = cv2.inRange(self.hsv, self.low[n], self.up[n])  # getting the mask
+        if red_dop == 1:
+            mask_1 = cv2.inRange(self.hsv, self.low[n + 1], self.up[n + 1])
+            self.mask = cv2.bitwise_or(self.mask, mask_1)
 
-        _, contours, hierarchy = cv2.findContours(self.mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)  # выделяем контуры
+        _, contours, hierarchy = cv2.findContours(self.mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)  # getting contours
         r_contours = []
-        for i in contours:  # проходимся по контурам, оставляя и отрисовывая только достаточно большие
+        for i in contours:  # outlining and selecting only big enough contours
             if cv2.contourArea(i) > min_area:
                 r_contours.append(i)
                 if to_draw:
                     cv2.drawContours(self.frame, i, -1, color, 2)
 
-        return r_contours  # возвращаем отсортированные контуры
+        return r_contours  # returning contours
 
 
-def pd():  # функция пд для движения по стенкам
+def pd():  # function of proportional–derivative controller for walls
     global pd_1, pd_2, KD, KP, e_old, timer_flag, time_turn, tim
-    global flag_left, flag_right, time_green, time_red, u, after_cub  # обозночение глобальных переменных, необходимых
-    # в функции
+    global flag_left, flag_right, time_green, time_red, u, after_cub  # needed global variables for this function
 
-    u_plus = 0  # определяем добавку к управляещему воздействию, для компенсации неровности камеры
+    u_plus = 0  # getting the addition to pd, to compensate the angle of the camera
     if direction == 'wise':
-        u_plus = 0
-    if direction == 'counter wise':
         u_plus = -10
+    if direction == 'counter wise':
+        u_plus = -15
 
-    contours = pd_1.find_contours(to_draw=DRAW, color=(255, 255, 0))  # определение контуров стенки на двух зонах
+    contours = pd_1.find_contours(to_draw=DRAW, color=(255, 255, 0))  # getting the contours for 1_st area
+    area_1 = map(cv2.contourArea, contours)  # getting the area of the biggest contour
     if contours:
-        area_1 = max(contours)
+        area_1 = max(area_1)
     else:
         area_1 = 0
 
-    contours = pd_2.find_contours(to_draw=DRAW, color=(255, 255, 0))
+    contours = pd_2.find_contours(to_draw=DRAW, color=(255, 255, 0))  # same for 2_nd area
+    area_2 = map(cv2.contourArea, contours)
     if contours:
-        area_2 = max(contours)
+        area_2 = max(area_2)
     else:
         area_2 = 0
 
-    e = area_2 - area_1  # рассчёт ошибки и управляющего воздействия для пд
+    e = area_2 - area_1  # counting the error and the final value of pd
     u = e * KP + ((e - e_old) // 10) * KD + 128 + u_plus
     e_old = e
 
-    if u > 160:  # ограничиваем максимальный поворот сервы
+    if u > 160:  # limiting the turning of servo
         u = 160
 
-    if area_2 != 0 and area_1 == 0:  # если в одной из зон нет стенки, включаем максимальный поворот в нужную сторону
-        flag_right = True  # включаем флаг поворота
-        if not timer_flag:  # обнонуляем таймеры поворота
-            if time.time() - time_green < 0.2:  # если поворот сразу после внутреннего кубика начинаем максимальный
-                # поворот сразу
+    if area_2 != 0 and area_1 == 0:  # if there is no wall in one of ares, turning to the max to needed side
+        flag_right = True  # changing the flag or turning
+        if not timer_flag:  # resetting the timer of turning
+            if time.time() - time_green < 0.2:  # if the turn, right after the inner sing, turn to the max
                 after_cub = True
                 if direction == 'wise':
                     time_turn = time.time() - 5
@@ -142,7 +138,7 @@ def pd():  # функция пд для движения по стенкам
         else:
             u = 140
 
-    elif area_1 != 0 and area_2 == 0:  # аналагично предыдущему
+    elif area_1 != 0 and area_2 == 0:  # same as the previous
         flag_left = True
         if not timer_flag:
             if time.time() - time_red < 0.2:
@@ -155,53 +151,52 @@ def pd():  # функция пд для движения по стенкам
             timer_flag = True
 
         if time.time() - time_turn > 0.5:
-            u = 70
+            u = 60
         else:
             u = 100
 
-    elif area_1 == 0 and area_2 == 0:  # если нет ни на зоне нет стенки включаем поворот в туже сторону что и раньше
-        # или в сорону движения линии
-        if flag_right:  # если поворот был вправо поворачиваем направо
+    elif area_1 == 0 and area_2 == 0:  # if there's no wall in any area, turn to the same side as before
+        if flag_right:
             if time.time() - time_turn > 0.5:
                 u = 160
             else:
                 u = 140
 
-        elif flag_left:  # если поворот был влево поворачиваем налево
+        elif flag_left:
             if time.time() - time_turn > 0.5:
-                u = 70
+                u = 60
             else:
                 u = 100
 
-    else:  # обнуление флагов, если на обоих зонах есть стенка
+    else:  # else resetting the flags
         after_cub = False
         flag_left = False
         flag_right = False
         timer_flag = False
 
-    if u < 70:  # ограничиваем максимальный поворот сервы
-        u = 70
-    return int(u)  # возвращаем управляющее воздействие
+    if u < 60:  # limiting the max turning for servo
+        u = 60
+    return int(u)  # returning controlling influence of pd
 
 
-def pd_cub(color):  # функция для рассчета управляющего воздействия для объездов кубиков
+def pd_cub(color):  # function of proportional–derivative controller for signs
     global direction, K_X, K_Y, frame, time_red, time_green, cub
 
-    if color == 'green':  # определяем контуры знаков в зависимости от цвета знаков
+    if color == 'green':  # getting the contours depending on the color
         countors = cub.find_contours(to_draw=DRAW, color=(0, 255, 0), min_area=1000)
     elif color == 'red':
-        countors = cub.find_contours(1, DRAW, min_area=1000)
+        countors = cub.find_contours(1, DRAW, min_area=1000, red_dop=1)
     else:
         print('color erorr')
-        return -1  # если цвет задан неправтльно, возвращаем -1 и выводим сообщение об ошибке
+        return -1  # if the color is not right, return -1
 
     if countors:
-        countors = max(countors, key=cv2.contourArea)  # если контуры есть берём максимальный из них
-        x, y, w, h = cv2.boundingRect(countors)  # находим крайние координаты контура
+        countors = max(countors, key=cv2.contourArea)  # if there is contours, getting the biggest of them
+        x, y, w, h = cv2.boundingRect(countors)  # getting the coordinates of the contour
         x = (2 * x + w) // 2
         y = y + h
 
-        if color == 'red':  # определяем координату к которой надо стремиться взависимости от цвета
+        if color == 'red':  # defining the needed coordinate, depending on the color
             time_red = time.time()
             x_tar = 0
         elif color == 'green':
@@ -211,40 +206,47 @@ def pd_cub(color):  # функция для рассчета управляющ�
             print('color erorr')
             return -1
 
-        e_x = round((x_tar - x) * K_X, 3)  # рассчитываем ошибку по координате x
-        e_y = round(y * K_Y, 3)  # рассчитываем ошибку по координате y
-        e_cub = int(abs(e_y) + abs(e_x))  # рассчитываем общую ошибку
+        e_x = round((x_tar - x) * K_X, 3)  # error for x coordinate
+        e_y = round(y * K_Y, 3)  # error for y coordinate
+        e_cub = int(abs(e_y) + abs(e_x))  # getting the error for both coordinates
 
         if color == 'green':
-            e_cub = int(e_cub * -1.5)
-
-        if color == 'green':  # выводим ошибку на экран
+            if direction == 'wise':
+                e_cub = int(e_cub * -1.5)
+            else:
+                e_cub = int(e_cub * -1.8)
+        if color == 'red':
+            if direction == 'wise':
+                e_cub = int(e_cub * 1.25)
+        if color == 'green':  # printing the error on the image
             frame = cv2.putText(frame, str(e_cub), (20, 60),
                                 cv2.FONT_HERSHEY_PLAIN, 2, (0, 255, 0), 2)
         else:
             frame = cv2.putText(frame, str(e_cub), (20, 90),
                                 cv2.FONT_HERSHEY_PLAIN, 2, (0, 0, 255), 2)
 
-        return e_cub  # возвращаем ошибку
+        return e_cub  # returning the erorr
 
-    return -1  # если нет  знаков в зоне возвращаем -1
+    return -1  # if there's no signs in the area, return -1
 
 
-def restart():  # функция для обновления все пременных и запуска
+def restart():  # function for resetting all the variables
     global orange, blue, u, e_old, tim, time_orange, time_blue, stop_flag, time_turn, time_green, time_red, time_speed
-    global pause_flag, flag_line_blue, flag_line_orange, direction, time_stop, flag_left, flag_right, timer_flag
+    global pause_flag, flag_line_blue, flag_line_orange, direction, time_stop, flag_left, flag_right, timer_flag, speed_def
 
     orange = 0
     blue = 0
 
     timer_flag = False
 
+    speed_def = 35
+
     u = 125
     e_old = 0
 
     tim = time.time()
-    time_orange = time.time()
-    time_blue = time.time()
+    time_orange = time.time() - 5
+    time_blue = time.time() - 5
     time_turn = time.time() - 5
     time_green = time.time() - 2
     time_red = time.time() - 2
@@ -261,8 +263,7 @@ def restart():  # функция для обновления все премен
     direction = ''
 
 
-
-ser = serial.Serial(  # подключения uart порта
+ser = serial.Serial(  # connecting uart
     port='/dev/ttyS0',  # Replace ttyS0 with ttyAM0 for Pi1,Pi2,Pi0
     baudrate=115200,
     stopbits=serial.STOPBITS_ONE
@@ -275,121 +276,104 @@ if not ser.isOpen():
     ser.open()
     print(1)
 
-orange = 0  # создаём переменные для подсчёта линий
+orange = 0  # variables, for counting lines
 blue = 0
 
-u = 125  # создание переменных для пд
+u = 125  # variables for pd
 e_old = 0
-speed_def = 25
+speed_def = 35
 
-# создание таймеров
-tim = time.time()  # таймер для финиша
-time_orange = time.time()  # таймер для подсчёта ораньжевых линий
-time_blue = time.time()  # таймер для подсчёта синих линий
-time_turn = time.time() - 5  # таймер для поворотов
-time_green = time.time() - 2  # таймер для отслеживания зелёных знаков
-time_red = time.time() - 2  # таймер для отслеживания красных знаков
-time_speed = time.time() + 200  # таймер для замедления в начале
-time_stop = time.time()  # создание таймера для торможения робота
+# initializing timers
+tim = time.time()  # for finish
+time_orange = time.time() - 5  # for counting orange lines
+time_blue = time.time() - 5  # for counting blue lines
+time_turn = time.time() - 5  # for turns
+time_green = time.time() - 2  # for green sings
+time_red = time.time() - 2  # for red signs
+time_speed = time.time() + 200  # for slowing down at the start(optional)
+time_stop = time.time()  # for stopping the robot
 
-# создание флагов
-timer_flag = False  # флаг для единичного обнуления флагов
-stop_flag = False  # флаг для остановки робота
-pause_flag = False  # флаг для паузы робота
-flag_left = False  # флаг для отслеживания поворота налево
-flag_right = False  # флаг для отслеживания поворота напрвао
-flag_line_orange = False  # флаг для отслеживвания ораньжевых линий
-flag_line_blue = False  # флаг для отслеживвания синих линий
-after_cub = False  # флаг для отслеживания поворота после кубиков
+# initializing flags
+timer_flag = False  # for resetting other variables only once
+stop_flag = False  # for stopping the robot
+pause_flag = False  # for pausing the robot
+flag_left = False  # for tracking turns to the left
+flag_right = False  # for tracking turns to the right
+flag_line_orange = False  # for tracking orange lines
+flag_line_blue = False  # for tracking blue lines
+after_cub = False  # for tracking turns after sings
 
-direction = ''  # переменная направления
+direction = ''  # direction variable
 
 print(1)
 
-robot = Rapi.RobotAPI(flag_serial=False)  # создание обьекта класса для управления камерой
-robot.set_camera(100, 640, 480)  # найстройка камеры
+robot = Rapi.RobotAPI(flag_serial=False)  # initializing object needed to manage the camera
+robot.set_camera(100, 640, 480)  # setting up the camera
 frame = robot.get_frame(wait_new_frame=1)
 
-# создание обьектов классов для зон изображения
-pd_1 = Frames(frame, X1_1_PD, X2_1_PD, Y1_PD, Y2_PD, [BLACK_LOW], [BLACK_UP]) # для правой стенки
-pd_2 = Frames(frame, X1_2_PD, X2_2_PD, Y1_PD, Y2_PD, [BLACK_LOW], [BLACK_UP]) # для левой стенки
-line = Frames(frame, X1_LINE, X2_LINE, Y1_LINE, Y2_LINE, [BLUE_LOW, ORANGE_LOW], [BLUE_UP, ORANGE_UP])  # для подсчёта
-# линий
-cub = Frames(frame, X1_CUB, X2_CUB, Y1_CUB, Y2_CUB, [GREEN_LOW, RED_LOW], [GREEN_UP, RED_UP])  # для детекции знаков
-check_dir = Frames(frame, X1_CHECK_DIR, X2_CHECK_DIR, Y1_CHECK_DIR, Y2_CHECK_DIR,
-                   [BLUE_LOW_CHECK_DIR, ORANGE_LOW_CHECK_DIR], [BLUE_UP_CHECK_DIR, ORANGE_UP_CHECK_DIR]) # для
-# определения направления
+# initializing objects for different areas
+pd_1 = Frames(frame, X1_1_PD, X2_1_PD, Y1_PD, Y2_PD, [BLACK_LOW], [BLACK_UP])  # for the right wall
+pd_2 = Frames(frame, X1_2_PD, X2_2_PD, Y1_PD, Y2_PD, [BLACK_LOW], [BLACK_UP])  # for the left wall
+line = Frames(frame, X1_LINE, X2_LINE, Y1_LINE, Y2_LINE, [BLUE_LOW, ORANGE_LOW], [BLUE_UP, ORANGE_UP])  # for counting
+# lines
+# for detection signs
+cub = Frames(frame, X1_CUB, X2_CUB, Y1_CUB, Y2_CUB, [GREEN_LOW, RED_LOW_1, RED_LOW_2], [GREEN_UP, RED_UP_1, RED_UP_2])
 
 robot.set_frame(frame, 40)
 
-# переменные для подсчёта fps
+# variables for counting fps
 time_fps = time.time()
 fps = 0
 fps_last = 0
 
-while True:  # основной цикл программы
-    if time.time() - time_speed > 3:  # проверка для повышения скорости
+while True:  # main loop
+    if time.time() - time_speed > 3:  # checking of the speed raising
         speed_def = 35
-    # обновление управляющего воздействия и скорости
+    # resetting controlling influence and speed
     u = -1
     speed = speed_def
-    fps += 1  # добавления счётчика fps
-    frame = robot.get_frame(wait_new_frame=1)  # берём изображения с камеры
+    fps += 1
+    frame = robot.get_frame(wait_new_frame=1)  # getting image from camera
 
-    cub.update(frame)  # обновление объекта для знаков
-    if not direction:  # проверка знаем ли мы направления движения
-        check_dir.update(frame)  # обновление объекта для направления
-        dir_orange = check_dir.find_contours(n=1, to_draw=DRAW, min_area=100)  # находим контуры ораньжевого
-        dir_blue = check_dir.find_contours(n=0, to_draw=DRAW, min_area=100, color=(0, 255, 255))  # находим контуры
-        # синего
-        if dir_blue:  # если есть синия линия направлени против часовой
-            direction = 'counter wise'
-            if after_cub:
-                time_turn -= 5
-            print(direction, after_cub)
-        elif dir_orange:  # если есть синия линия направлени по часовой
-            direction = 'wise'
-            if after_cub:
-                time_turn -= 5
-            print(direction, after_cub)
+    cub.update(frame)  # updating sign area
 
-    u_red = pd_cub('red')  # определяем направляющее воздействие по красным знакам
-    u_green = pd_cub('green')  # определяем направляющее воздействие по красным знакам
+    u_red = pd_cub('red')  # getting controlling influence for red sings
+    u_green = pd_cub('green')  # getting controlling influence for green sings
     if u_green != -1 or u_red != -1:
-        u = 125 + max(u_green, u_red, key=abs)  # если есть знаки формируем управляющее воздействие
+        u = 125 + max(u_green, u_red, key=abs)  # if there is sings, counting final controlling influence
 
-    # если знаков нет, едем по стенкам
+    # if there is no sings, the robot will drive between walls
     else:
-        pd_1.update(frame)  # обновляем обьекты стенок
+        pd_1.update(frame)  # updating wall areas
         pd_2.update(frame)
-        u = pd()  # формируем упраляющее воздействие
+        u = pd()  # counting controlling influence
 
-    line.update(frame)  # обновляем объект для подсчёта линий
-    contours_blue = line.find_contours(0, DRAW, min_area=500)  # определяем контур синей и ораньжевой линии
-    contours_orange = line.find_contours(1, DRAW, min_area=500)
+    line.update(frame)  # updating line-counting area
+    contours_blue = line.find_contours(0, DRAW, min_area=500)  # getting bue and orange areas
+    contours_orange = line.find_contours(1, DRAW, min_area=500, color=(255, 255, 0))
 
-    if contours_blue:  # если есть синия линия проверяем новая ли это линия и добавляем к счётчика
+    if contours_blue:  # if there is blue contour, checking, if the line is new, and adding it
         contours_blue = max(contours_blue, key=cv2.contourArea)
         ar = cv2.contourArea(contours_blue)
         if ar > 10:
-            if not flag_line_blue and time.time() - time_blue > 0.8:
+            if not flag_line_blue and time.time() - time_blue > 1:
                 if not direction:
                     direction = 'counter wise'
                 blue += 1
                 if blue == 1 and orange == 0:
                     time_speed = time.time()
                 print('orange: ' + str(orange) + '\n blue: ' + str(blue))
-                time_blue = time.time()  # обновляем таймер для синих линий
-                tim = time.time()  # обновляем таймер для остановки робота
+                time_blue = time.time()  # resetting timer for blue lines
+                tim = time.time()  # resetting timer for stopping
             flag_line_blue = True
     else:
         flag_line_blue = False
 
-    if contours_orange:  # аналогично синей линии
+    if contours_orange:  # same as for blue line
         contours_orange = max(contours_orange, key=cv2.contourArea)
         ar = cv2.contourArea(contours_orange)
         if ar > 10:
-            if not flag_line_orange and time.time() - time_orange > 0.8:
+            if not flag_line_orange and time.time() - time_orange > 1:
                 if not direction:
                     direction = 'wise'
                 orange += 1
@@ -402,41 +386,41 @@ while True:  # основной цикл программы
     else:
         flag_line_orange = False
 
-    if (max(orange, blue) > 11 and time.time() - tim > 1.2) or stop_flag:  # проверяем нужно ли роботу останавливаться
+    if (max(orange, blue) > 11 and time.time() - tim > 1.2) or stop_flag:  # checking if the robot must stop
         if not stop_flag:
             time_stop = time.time()
-        if time.time() - time_stop < 0.3:  # торможение на 0.3 секунды
+        if time.time() - time_stop < 0.3:  # braking for 0.3 seconds
             speed = -50
             u = 127
-        else:  # останавливаем робота
+        else:  # stopping the robot
             u = 127
             speed = 0
-        mesg = str(u + 100) + str(speed + 200) + '$'  # формируем сообщение для pyboard
-        ser.write(mesg.encode('utf-8'))  # отправляем сообщение на pyboard
-        stop_flag = True  # указываем что робот остановился/тормозит
+        mesg = str(u + 100) + str(speed + 200) + '$'  # forming the message for pyboard
+        ser.write(mesg.encode('utf-8'))  # sending message to pyboard
+        stop_flag = True
 
-    if pause_flag:  # проверяем на паузе ли робот
+    if pause_flag:  # checking if the robot is paused
         u = 127
         speed = 0
 
-    if not stop_flag:  # если робот не остановился/тормозит
+    if not stop_flag:  # checking if robot is not stopped/breaking
         frame = cv2.putText(frame, ' '.join([str(speed), str(u), str(fps_last)]), (20, 30),
-                            cv2.FONT_HERSHEY_PLAIN, 2, (255, 0, 0), 2)  # выводим параметры на изображение
-        mesg = str(u + 100) + str(speed + 200) + '$'  # формируем сообщение для pyboard
-        ser.write(mesg.encode('utf-8'))  # отправляем сообщение на pyboard
+                            cv2.FONT_HERSHEY_PLAIN, 2, (255, 0, 0), 2)  # printing parameters on the image
+        mesg = str(u + 100) + str(speed + 200) + '$'  # sending message to pyboard
+        ser.write(mesg.encode('utf-8'))  # sending message to pyboard
 
-    if time.time() - time_fps > 1:  # подсчитываем fps
+    if time.time() - time_fps > 1:  # counting fps
         time_fps = time.time()
         fps_last = fps
         fps = 0
 
-    robot.set_frame(frame, 40)  # отправляем изменёное изображение
+    robot.set_frame(frame, 40)  # sending changed image
 
-    key = robot.get_key()  # забиарем нажатую на комьютере кнопку
+    key = robot.get_key()  # getting clicked button
     if key != -1:
-        if key == 83:  # если нажато s ставим робота на паузу
+        if key == 83:  # if s is clicked, pausing the robot
             pause_flag = True
-        elif key == 71:  # если нажато g снимаем робота с паузы
+        elif key == 71:  # if g is clicked unpausing the robot
             pause_flag = False
-        elif key == 82:  # если нажато r перезапускаем робота
+        elif key == 82:  # if r is clicked restarting the robot
             restart()
